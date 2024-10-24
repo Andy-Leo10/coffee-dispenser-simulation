@@ -1,0 +1,62 @@
+# Create a Docker compose file to start up all the 
+# previous containers. This Docker Compose file will 
+# start the following systems:
+
+# - Gazebo simulation
+# - X
+# - Y
+
+version: '3.7'
+services:
+    gazebo_server:
+        hostname: gazebo
+        build:
+            context: .
+            dockerfile: starbots-sim-gazebo
+        container_name: gazebo_coffee_container
+        environment:
+            - DISPLAY
+            - GAZEBO_MODEL_PATH=/ros2_ws/src/the_construct_office_gazebo/models:/ros2_ws/src/ur_arm:${GAZEBO_MODEL_PATH}
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            # - ./gazebo_stuff:/ros2_ws/src/gazebo_stuff
+            # - ./the_construct_office_gazebo:/ros2_ws/src/the_construct_office_gazebo
+            # - ./ur_arm:/ros2_ws/src/ur_arm
+        networks:
+            - ros2-net
+        # command: tail -f /dev/null
+        command: "/bin/bash -c \"sleep 2 && source /opt/ros/humble/setup.bash && source /ros2_ws/install/setup.bash && ros2 launch the_construct_office_gazebo starbots_ur3e.launch.xml\""
+
+    moveit_server:
+        hostname: moveit
+        build:
+            context: .
+            dockerfile: starbots-sim-gazebo
+        container_name: moveit_coffee_container
+        environment:
+            - DISPLAY
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - ./sim_moveit_config:/ros2_ws/src/sim_moveit_config
+        networks:
+            - ros2-net
+        command: tail -f /dev/null
+        # command: "/bin/bash -c \"sleep 15 && source /opt/ros/humble/setup.bash && source /ros2_ws/install/setup.bash && ros2 launch robot_ur3e_moveit docker_moveit.launch.py\""
+
+    # vision_server:
+    #     hostname: vision_server
+    #     build:
+    #         context: .
+    #         dockerfile: starbots-sim-yolo
+    #     # image: andyleo10/andres.alamo-cp22:starbots-sim-yolo
+    #     container_name: container_vision_server
+    #     environment:
+    #         - DISPLAY
+    #     volumes:
+    #         - /tmp/.X11-unix:/tmp/.X11-unix
+    #     networks:
+    #         - ros2-net
+    #     command: "/bin/bash -c \"sleep 15 && source /opt/ros/humble/setup.bash && source /ros2_ws/install/setup.bash && ros2 launch robot_ur3e_perception docker_yolov5_tf.launch.py\""
+
+networks:
+    ros2-net:    

@@ -1,0 +1,18 @@
+<?xml version='1.0' ?>
+
+<launch>
+    <!-- Define arguments -->
+    <arg name="package_description" default="sim_moveit_config"/>
+    <arg name="rviz_config_file_name" default="displays.rviz"/>
+
+    <!-- launch move_group -->
+    <include file="$(find-pkg-share sim_moveit_config)/launch/move_group.launch.py"/>
+    <!-- launch moveit_rviz -->
+    <!-- <include file="$(find-pkg-share sim_moveit_config)/launch/moveit_rviz.launch.py"/> -->
+    
+    <!-- launch start_rviz_with_arguments.launch -->
+    <include file="$(find-pkg-share sim_moveit_config)/launch/start_rviz_with_arguments.launch.py">
+        <arg name="package_description" value="$(var package_description)"/>
+        <arg name="rviz_config_file_name" value="$(var rviz_config_file_name)"/>
+    </include>
+</launch>
